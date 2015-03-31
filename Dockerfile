@@ -39,8 +39,11 @@ RUN apt-get -y update && apt-get -y install \
     python python-pip git-core wget \
     python-h5py \ 
     subversion \
-    nfs-common nfs-client
-    
+    nfs-common nfs-client \
+    openssh-server
+
+RUN mkdir /var/run/sshd
+
 RUN adduser --disabled-password --gecos 'unprivileged user' kat \
     && (echo kat; echo kat) | passwd kat \
     && adduser kat sudo \
@@ -85,9 +88,9 @@ COPY id_rsa /root/.ssh/
 RUN echo "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 RUN chmod -R go-rwx ~/.ssh
 
-COPY fftw-3.3.4.tar.gz /home/kat/
-
 WORKDIR /home/kat
+
+RUN wget http://www.fftw.org/fftw-3.3.4.tar.gz
 
 RUN mkdir -p /usr/src/fftw3 \
     && tar -xvf fftw-3.3.4.tar.gz -C /usr/src/fftw3 \
@@ -117,4 +120,6 @@ RUN wget http://www.atnf.csiro.au/people/pulsar/psrcat/downloads/psrcat_pkg.tar.
 RUN tar -xvf psrcat_pkg.tar.gz -C $SOFTWARE_DIR/ \ 
     && cd $SOFTWARE_DIR/psrcat_tar \
     && /bin/bash makeit \
-    && cp psrcat $SOFTWARE_DIR/bin    
+    && cp psrcat $SOFTWARE_DIR/bin
+
+CMD ["/usr/sbin/sshd", "-D"]
