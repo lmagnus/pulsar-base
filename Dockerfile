@@ -122,4 +122,20 @@ RUN tar -xvf psrcat_pkg.tar.gz -C $SOFTWARE_DIR/ \
     && /bin/bash makeit \
     && cp psrcat $SOFTWARE_DIR/bin
 
+ENV FCOMPL gfortran
+
+WORKDIR /home/kat
+
+RUN wget ftp://ftp.astro.caltech.edu/pub/pgplot/pgplot5.2.tar.gz
+
+RUN tar -xvf pgplot5.2.tar.gz -C $SOFTWARE_DIR/ \
+    && cd $SOFTWARE_DIR/pgplot
+#    && /bin/bash makemake . linux g77_gcc_aout \
+#    && ln /usr/bin/gfortran /usr/bin/g77 && make \
+#    && make clean \
+#    && make cpg \
+#    && ld -shared -o libcpgplot.so --whole-archive libcpgplot.a
+
+
+# eoi
 CMD ["/usr/sbin/sshd", "-D"]
